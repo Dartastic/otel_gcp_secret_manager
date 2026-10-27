@@ -1,15 +1,16 @@
-// Licensed under the Dartastic Pro Software License Agreement.
+// Licensed under the Apache License, Version 2.0
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
-import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
+import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_gcp_secret_manager_suppression.dart';
 
 const _tracerName = 'dartastic_otel_libs_gcp_secret_manager';
 
-Tracer _tracer() => OTel.tracerProvider().getTracer(_tracerName);
+APITracer _tracer() => OTelAPI.tracerProvider().getTracer(_tracerName);
 
 class GcpSecretManagerResult {
+  /// Creates a result.
   const GcpSecretManagerResult({
     this.project,
     this.secretName,
@@ -77,8 +78,13 @@ class GcpSecretManagerResult {
   final int? statusCode;
 }
 
+/// What a traced call returned: the value for the caller plus fields
+/// recorded on the span.
 class GcpSecretManagerCallResult<T> {
+  /// Creates a call result.
   const GcpSecretManagerCallResult({required this.value, this.result});
+
+  /// The value returned to the caller.
   final T value;
   final GcpSecretManagerResult? result;
 }
@@ -105,7 +111,7 @@ Future<T> tracedGcpSecretManager<T>({
   final span = _tracer().startSpan(
     'gcp_secret_manager $operation',
     kind: SpanKind.client,
-    attributes: OTel.attributesFromMap(m),
+    attributes: OTelAPI.attributesFromMap(m),
   );
   try {
     final r = await invoke();
@@ -113,97 +119,97 @@ Future<T> tracedGcpSecretManager<T>({
       final res = r.result!;
       final extras = <Attribute<Object>>[];
       if (res.project != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'gcp_secret_manager.project',
           res.project!,
         ));
       }
       if (res.secretName != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'gcp_secret_manager.secret.name',
           res.secretName!,
         ));
       }
       if (res.versionAlias != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'gcp_secret_manager.version.alias',
           res.versionAlias!,
         ));
       }
       if (res.versionId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'gcp_secret_manager.version.id',
           res.versionId!,
         ));
       }
       if (res.replicationKind != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'gcp_secret_manager.replication.kind',
           res.replicationKind!,
         ));
       }
       if (res.replicationLocations != null) {
-        extras.add(OTel.attributeStringList(
+        extras.add(OTelAPI.attributeStringList(
           'gcp_secret_manager.replication.locations',
           res.replicationLocations!,
         ));
       }
       if (res.cmkKmsKey != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'gcp_secret_manager.cmk.key_name',
           res.cmkKmsKey!,
         ));
       }
       if (res.ttlSec != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'gcp_secret_manager.ttl_sec',
           res.ttlSec!,
         ));
       }
       if (res.expireUnixSec != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'gcp_secret_manager.expire_at_sec',
           res.expireUnixSec!,
         ));
       }
       if (res.payloadBytes != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'gcp_secret_manager.payload.bytes',
           res.payloadBytes!,
         ));
       }
       if (res.checksum != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'gcp_secret_manager.checksum',
           res.checksum!,
         ));
       }
       if (res.state != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'gcp_secret_manager.version.state',
           res.state!,
         ));
       }
       if (res.regional != null) {
-        extras.add(OTel.attributeBool(
+        extras.add(OTelAPI.attributeBool(
           'gcp_secret_manager.regional',
           res.regional!,
         ));
       }
       if (res.rotationPeriodSec != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'gcp_secret_manager.rotation.period_sec',
           res.rotationPeriodSec!,
         ));
       }
       if (res.nextRotationUnixSec != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'gcp_secret_manager.rotation.next_at_sec',
           res.nextRotationUnixSec!,
         ));
       }
       if (res.errorCode != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'gcp_secret_manager.error.code',
           res.errorCode!,
         ));
@@ -215,13 +221,13 @@ Future<T> tracedGcpSecretManager<T>({
         }
       }
       if (res.errorMessage != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'gcp_secret_manager.error.message',
           res.errorMessage!,
         ));
       }
       if (res.statusCode != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'http.response.status_code',
           res.statusCode!,
         ));
@@ -232,13 +238,13 @@ Future<T> tracedGcpSecretManager<T>({
           );
         }
       }
-      if (extras.isNotEmpty) span.addAttributes(OTel.attributes(extras));
+      if (extras.isNotEmpty) span.addAttributes(OTelAPI.attributes(extras));
     }
     return r.value;
   } catch (e, st) {
-    span.addAttributes(OTel.attributes([
-      OTel.attributeString(
-        ErrorResource.errorType.key,
+    span.addAttributes(OTelAPI.attributes([
+      OTelAPI.attributeString(
+        ErrorAttributes.errorType.key,
         e.runtimeType.toString(),
       ),
     ]));
